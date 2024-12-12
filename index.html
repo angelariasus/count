@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+      background-color: #1e1e1e;;
       margin: 0;
       padding: 0;
     }
@@ -17,10 +17,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: #fff;
-      border: 1px solid #ddd;
+      background-color: #1e1e1e;;
+      border: 1px solid #1e1e1e;;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
     .titulo {
       text-align: center;
@@ -48,6 +47,7 @@
     #suben {
       background-color: #34C759;
       color: #fff;
+      font-weight: bold;
     }
     #suben:hover {
       background-color: #2E865F;
@@ -55,6 +55,7 @@
     #bajan {
       background-color: #3498DB;
       color: #fff;
+      font-weight: bold;
     }
     #bajan:hover {
       background-color: #2E6DA4;
@@ -62,6 +63,7 @@
     #reiniciar {
       background-color: #E74C3C;
       color: #fff;
+      font-weight: bold;
     }
     #reiniciar:hover {
       background-color: #C0392B;
@@ -71,7 +73,7 @@
 <body>
   <div class="contenedor">
     <div style="max-width: 400px; margin: 0 auto; padding: 20px;">
-      <p class="contador" id="contador"></p>
+      <p class="contador" id="contador" style="color: white">Cargando...</p>
       <div class="botones">
         <button id="suben">Suben</button>
         <button id="bajan">Bajan</button>
@@ -87,35 +89,58 @@
     const reiniciarButton = document.getElementById('reiniciar');
     const urlBase = 'https://contador-production-0a75.up.railway.app';
 
-    fetch(`${urlBase}/contador`)
-      .then(response => response.json())
-      .then(contador => {
-        contadorElement.textContent = `Suben: ${contador.suben}, Bajan: ${contador.bajan}`;
-      });
+    // Función para actualizar el contador desde la API
+    function actualizarContador() {
+      contadorElement.textContent = 'Cargando...';
+      fetch(`${urlBase}/contador`)
+        .then(response => {
+          if (!response.ok) throw new Error('Error al obtener el contador');
+          return response.json();
+        })
+        .then(contador => {
+          contadorElement.textContent = `Suben: ${contador.suben} Bajan: ${contador.bajan}`;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          contadorElement.textContent = 'Error al cargar los datos';
+        });
+    }
 
+    // Evento para incrementar el contador
     subenButton.addEventListener('click', () => {
       fetch(`${urlBase}/contador/suben`, { method: 'POST' })
-        .then(response => response.json())
-        .then(contador => {
-          contadorElement.textContent = `Suben: ${contador.suben}, Bajan: ${contador.bajan}`;
-        });
+        .then(response => {
+          if (!response.ok) throw new Error('Error al incrementar');
+          return response.json();
+        })
+        .then(actualizarContador)
+        .catch(error => console.error('Error al incrementar:', error));
     });
 
+    // Evento para decrementar el contador
     bajanButton.addEventListener('click', () => {
       fetch(`${urlBase}/contador/bajan`, { method: 'POST' })
-        .then(response => response.json())
-        .then(contador => {
-          contadorElement.textContent = `Suben: ${contador.suben}, Bajan: ${contador.bajan}`;
-        });
+        .then(response => {
+          if (!response.ok) throw new Error('Error al decrementar');
+          return response.json();
+        })
+        .then(actualizarContador)
+        .catch(error => console.error('Error al decrementar:', error));
     });
 
+    // Evento para reiniciar el contador
     reiniciarButton.addEventListener('click', () => {
       fetch(`${urlBase}/contador/reiniciar`, { method: 'POST' })
-        .then(response => response.json())
-        .then(contador => {
-          contadorElement.textContent = `Suben: ${contador.suben}, Bajan: ${contador.bajan}`;
-        });
+        .then(response => {
+          if (!response.ok) throw new Error('Error al reiniciar');
+          return response.json();
+        })
+        .then(actualizarContador)
+        .catch(error => console.error('Error al reiniciar:', error));
     });
+
+    // Inicializa el contador al cargar la página
+    actualizarContador();
   </script>
 </body>
 </html>
