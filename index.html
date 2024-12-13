@@ -108,36 +108,6 @@
     const desbloquearButton = document.getElementById('desbloquear');
     const bloquearButton = document.getElementById('bloquear');
     const urlBase = 'https://contador-production-5202.up.railway.app';
-    const urlBaseUrl = 'https://api-0cws.onrender.com';
-
-    
-
-    desbloquearButton.addEventListener('click', () => {
-        fetch(`${apiBaseUrl}/actualizar-puertas`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ puerta1: 180, puerta2: 0 })
-         })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Puertas actualizadas:", data);
-         })
-        .catch(error => console.error("Error al actualizar puertas:", error));
-    });
-
-    bloquearButton.addEventListener('click', () => {
-        fetch(`${apiBaseUrl}/actualizar-puertas`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ puerta1: 0, puerta2: 0 })
-         })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Puertas actualizadas:", data);
-         })
-        .catch(error => console.error("Error al actualizar puertas:", error));
-    });
-
 
     function actualizarContador() {
       contadorElement.textContent = 'Cargando...';
@@ -154,6 +124,38 @@
           contadorElement.textContent = 'Error al cargar los datos';
         });
     }
+
+    desbloquearButton.addEventListener('click', () => {
+      fetch(`${urlBase}/contador/estado`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ estado: 0 })
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Error al enviar estado 0');
+        return response.json();
+      })
+      .then(data => {
+        document.getElementById('respuesta').innerText = JSON.stringify(data);
+      })
+      .catch(error => console.error('Error al enviar estado 0:', error));
+    });
+
+    bloquearButton.addEventListener('click', () => {
+      fetch(`${urlBase}/contador/estado`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ estado: 1 })
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Error al enviar estado 1');
+        return response.json();
+      })
+      .then(data => {
+        document.getElementById('respuesta').innerText = JSON.stringify(data);
+      })
+      .catch(error => console.error('Error al enviar estado 1:', error));
+    });
 
     // Evento para incrementar el contador
     subenButton.addEventListener('click', () => {
